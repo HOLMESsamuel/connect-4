@@ -141,15 +141,81 @@ class grid {
         }
     }
 
-    AIturn(player) {
-        const randomCol = Math.floor(Math.random() * 6);
-        const cell = this.findLastEmptyCell(randomCol);
+    evaluateScore(player) {
+
+        function evaluate(nPlayer, nEmpty, nOther) {
+            var score = 0;
+            if (nEmpty == 4) {
+                return score;
+            }
+            if (nPlayer == 4) {
+                score += 100;
+            } else if (nPlayer == 3 && nEmpty == 1) {
+                score += 40;
+            } else if (nPlayer == 2 && nEmpty == 2) {
+                score += 10;
+            }
+
+            return score;
+        }
+
+        var score = -1000;
+
+        const otherPlayer = (player === 'red') ? "yellow" : "red";
+        for (var row = 0; row < this.ROWS; row++) {
+            for (var col = 0; col < this.COLS - 3; col++) {
+                var nPlayer = 0;
+                var nEmpty = 0;
+                var nOther = 0;
+                for (var i = 0; i < 4; i++) {
+                    if (this.getCell(row, col + i).hasClass(player)) {
+                        nPlayer += 1;
+                    } else if (this.getCell(row, col + i).hasClass("empty")) {
+                        nEmpty += 1;
+                    } else if (this.getCell(row, col + i).hasClass(otherPlayer)) {
+                        nOther += 1;
+                    }
+                }
+                score += evaluate(nPlayer, nEmpty, nOther);
+            }
+        }
+        return score;
+    }
+
+    pickBestMove(player) {
+        var bestCol = 0;
+        const cell = this.findLastEmptyCell(bestCol);
         cell.removeClass("empty");
+        cell.addClass(player);
+        var scoreMax = this.evaluateScore(player);
+        cell.removeClass(player);
+        cell.addClass("empty");
+        for (var col = 1; col < this.COLS; col++) {
+            const cell = this.findLastEmptyCell(col);
+            cell.removeClass("empty");
+            cell.addClass(player);
+            var score = this.evaluateScore(player);
+            console.log(col + " " + score + " ");
+            cell.removeClass(player);
+            cell.addClass("empty");
+            if (score > scoreMax) {
+                scoreMax = score;
+                bestCol = col;
+            }
+        }
+        return bestCol;
+    }
+
+    AIturn(player) {
         const ai = (player === 'red') ? "yellow" : "red";
+        const bestCol = this.pickBestMove(ai);
+        const cell = this.findLastEmptyCell(bestCol);
+        cell.removeClass("empty");
         cell.addClass(ai);
+        console.log("best " + bestCol);
         const row = cell.data("row");
-        if (this.checkForWinner(row, randomCol, ai)) {
-            alert(this.checkForWinner(row, randomcol, ai));
+        if (this.checkForWinner(row, bestCol, ai)) {
+            alert(this.checkForWinner(row, bestCol, ai));
         }
     }
 
