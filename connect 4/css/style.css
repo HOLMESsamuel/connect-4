@@ -1,0 +1,90 @@
+body {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#btnStart {
+    margin-bottom: 20px;
+    background-color: blue;
+}
+
+#connect4 {
+    background-color: blue;
+    display: inline-block;
+    border-radius: 8px;
+    border: solid black 1px;
+}
+
+.row {
+    margin: 0;
+}
+
+.column {
+    margin: 4px;
+    display: inline-block;
+    height: 70px;
+    width: 70px;
+    border-radius: 50%;
+    border: solid black 0.5px;
+    background-color: white;
+}
+
+.column.empty {
+    cursor: pointer;
+}
+
+.next-red {
+    background-color: rgb(255, 111, 111);
+}
+
+.next-yellow {
+    background-color: rgb(255, 255, 115);
+}
+
+.red {
+    background-color: red;
+}
+
+.yellow {
+    background-color: yellow;
+}
+
+.modal-body {
+    text-align: left;
+}
+
+input[type=radio] {
+    display: none;
+}
+
+input[type=radio]+label:before {
+    background: #fff;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    margin-top: -3px;
+    margin-right: 6px;
+    display: inline-block;
+    vertical-align: middle;
+    content: '';
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+}
+
+input[type=radio]:checked+label:before {
+    background: rgb(146, 194, 125);
+    border-color: #B6D7A8;
+    box-shadow: inset 0px 0px 0px 2px #fff;
+}
+
+input[type=radio]:checked+#labelRed:before {
+    background: red;
+    border-color: red;
+    box-shadow: inset 0px 0px 0px 2px #fff;
+}
+
+input[type=radio]:checked+#labelYellow:before {
+    background: yellow;
+    border-color: yellow;
+    box-shadow: inset 0px 0px 0px 2px #fff;
+}

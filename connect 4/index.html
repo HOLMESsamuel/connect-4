@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Connect 4</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+    <!-- Button trigger modal -->
+    <button type="button" id="btnStart" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        Let's play to connect 4 !
+    </button>
+    <br>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Options</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+                </div>
+                <div class="modal-body">
+                    <h6>Game mode</h6>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions1" id="inlineRadio11" value="2players" checked>
+                        <label class="form-check-label" for="inlineRadio11">Two players</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions1" id="inlineRadio12" value="AI">
+                        <label class="form-check-label" for="inlineRadio12">Versus AI</label>
+                    </div>
+                    <br><br>
+                    <h6>Your color</h6>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions2" id="inlineRadio21" value="red" checked>
+                        <label id="labelRed" class="form-check-label" for="inlineRadio21">Red</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions2" id="inlineRadio22" value="yellow">
+                        <label id="labelYellow" class="form-check-label" for="inlineRadio22">Yellow</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button id="begin" type="button" class="btn btn-success" data-dismiss="modal">Start</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="connect4"></div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        $('#myModal').on('shown.bs.modal', function() {
+            $('#myInput').trigger('focus')
+        })
+    </script>
+</body>
+
+</html>
