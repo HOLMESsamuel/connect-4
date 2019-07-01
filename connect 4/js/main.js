@@ -151,9 +151,9 @@ class grid {
             if (nPlayer == 4) {
                 score += 100;
             } else if (nPlayer == 3 && nEmpty == 1) {
-                score += 40;
-            } else if (nPlayer == 2 && nEmpty == 2) {
                 score += 10;
+            } else if (nPlayer == 2 && nEmpty == 2) {
+                score += 5;
             }
 
             return score;
@@ -162,6 +162,8 @@ class grid {
         var score = -1000;
 
         const otherPlayer = (player === 'red') ? "yellow" : "red";
+
+        //checks for horizontal alignement
         for (var row = 0; row < this.ROWS; row++) {
             for (var col = 0; col < this.COLS - 3; col++) {
                 var nPlayer = 0;
@@ -179,6 +181,64 @@ class grid {
                 score += evaluate(nPlayer, nEmpty, nOther);
             }
         }
+
+        //checks for vertical alignement
+        for (var col = 0; col < this.COLS; col++) {
+            for (var row = 0; row < this.ROWS - 3; row++) {
+                var nPlayer = 0;
+                var nEmpty = 0;
+                var nOther = 0;
+                for (var i = 0; i < 4; i++) {
+                    if (this.getCell(row + i, col).hasClass(player)) {
+                        nPlayer += 1;
+                    } else if (this.getCell(row + i, col).hasClass("empty")) {
+                        nEmpty += 1;
+                    } else if (this.getCell(row + i, col).hasClass(otherPlayer)) {
+                        nOther += 1;
+                    }
+                }
+                score += evaluate(nPlayer, nEmpty, nOther);
+            }
+        }
+
+        //checks for down diagonal alignement
+        for (var col = 0; col < this.COLS - 3; col++) {
+            for (var row = 0; row < this.ROWS - 3; row++) {
+                var nPlayer = 0;
+                var nEmpty = 0;
+                var nOther = 0;
+                for (var i = 0; i < 4; i++) {
+                    if (this.getCell(row + i, col + i).hasClass(player)) {
+                        nPlayer += 1;
+                    } else if (this.getCell(row + i, col + i).hasClass("empty")) {
+                        nEmpty += 1;
+                    } else if (this.getCell(row + i, col + i).hasClass(otherPlayer)) {
+                        nOther += 1;
+                    }
+                }
+                score += evaluate(nPlayer, nEmpty, nOther);
+            }
+        }
+
+        //checks for up diagonal alignement
+        for (var col = 0; col < this.COLS; col++) {
+            for (var row = this.ROWS; row > this.ROWS - 3; row--) {
+                var nPlayer = 0;
+                var nEmpty = 0;
+                var nOther = 0;
+                for (var i = 0; i < 4; i++) {
+                    if (this.getCell(row - i, col + i).hasClass(player)) {
+                        nPlayer += 1;
+                    } else if (this.getCell(row - i, col + i).hasClass("empty")) {
+                        nEmpty += 1;
+                    } else if (this.getCell(row - i, col + i).hasClass(otherPlayer)) {
+                        nOther += 1;
+                    }
+                }
+                score += evaluate(nPlayer, nEmpty, nOther);
+            }
+        }
+
         return score;
     }
 
@@ -188,19 +248,29 @@ class grid {
         cell.removeClass("empty");
         cell.addClass(player);
         var scoreMax = this.evaluateScore(player);
+        console.log(0 + " " + scoreMax + " ");
         cell.removeClass(player);
         cell.addClass("empty");
         for (var col = 1; col < this.COLS; col++) {
             const cell = this.findLastEmptyCell(col);
-            cell.removeClass("empty");
-            cell.addClass(player);
-            var score = this.evaluateScore(player);
-            console.log(col + " " + score + " ");
-            cell.removeClass(player);
-            cell.addClass("empty");
-            if (score > scoreMax) {
-                scoreMax = score;
-                bestCol = col;
+            if (cell) {
+                cell.removeClass("empty");
+                cell.addClass(player);
+                var score = this.evaluateScore(player);
+                if (col == 1 || col == 5) {
+                    score += 1;
+                } else if (col == 2 || col == 4) {
+                    score += 3;
+                } else if (col == 3) {
+                    score += 6;
+                }
+                console.log(col + " " + score + " ");
+                cell.removeClass(player);
+                cell.addClass("empty");
+                if (score > scoreMax) {
+                    scoreMax = score;
+                    bestCol = col;
+                }
             }
         }
         return bestCol;
