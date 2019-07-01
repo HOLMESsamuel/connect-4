@@ -242,6 +242,28 @@ class grid {
         return score;
     }
 
+    minimax(node, depth, maximizingPlayer) {
+        const end = node.isTerminal()
+        if (depth == 0 || end) {
+            if (end) {
+                if (node.winner(maximizingPlayer)) {
+                    return 1000000000;
+                } else if (node.winner(otherPlayer)) {
+                    return -100000000;
+                } else {
+                    return 0;
+                }
+            } else {
+                return node.evaluateScore(player)
+            }
+        }
+        if (maximizingPlayer) {
+
+        } else { //minimisingPlayer
+
+        }
+    }
+
     pickBestMove(player) {
         var bestCol = 0;
         const cell = this.findLastEmptyCell(bestCol);
