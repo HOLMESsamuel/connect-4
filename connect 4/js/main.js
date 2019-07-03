@@ -1,25 +1,144 @@
-function evaluateScoreTab(grid, player) {
-    function evaluate(nPlayer, nEmpty, nOther) {
-        var score = 0;
-        if (nEmpty == 4) {
-            return score;
+/**the fonction checks for an alignement of 4 colors in one of four directions
+ * (South-North, East-West, SouthWest-NorthEast, NorthWest-SouthEsast)
+ * It work thanks to a recursive method 
+ */
+function winner(grid, player, row, col) {
+    function checkS(n, row, col, player) {
+        if (row < 5) { //verify we are not looking outside the grid
+            if (grid[row + 1][col] == player) {
+                return checkS(n + 1, row + 1, col, player);
+            } else {
+                return n;
+            }
+        } else {
+            return n;
         }
-        if (nPlayer == 4) {
-            score += 100;
-        } else if (nPlayer == 3 && nEmpty == 1) {
-            score += 10;
-        } else if (nPlayer == 2 && nEmpty == 2) {
-            score += 5;
-        }
-
-        return score;
     }
 
+    function checkE(n, row, col, player) {
+        if (col < 6) {
+            if (grid[row][col + 1] == player) {
+                return checkE(n + 1, row, col + 1, player);
+            } else {
+                return n;
+            }
+        } else {
+            return n;
+        }
+    }
+
+    function checkW(n, row, col, player) {
+        if (col > 0) {
+            if (grid[row][col - 1] == player) {
+                return checkW(n + 1, row, col - 1, player);
+            } else {
+                return n;
+            }
+        } else {
+            return n;
+        }
+    }
+
+    function checkNE(n, row, col, player) {
+        if (col < 6 && row > 0) {
+            if (grid[row - 1][col + 1] == player) {
+                return checkNE(n + 1, row - 1, col + 1, player);
+            } else {
+                return n;
+            }
+        } else {
+            return n;
+        }
+    }
+
+    function checkSW(n, row, col, player) {
+        if (col > 0 && row < 5) {
+            if (grid[row + 1][col - 1] == player) {
+                return checkSW(n + 1, row + 1, col - 1, player);
+            } else {
+                return n;
+            }
+        } else {
+            return n;
+        }
+    }
+
+    function checkNW(n, row, col, player) {
+        if (col > 0 && row > 0) {
+            if (grid[row - 1][col - 1] == player) {
+                return checkNW(n + 1, row - 1, col - 1, player);
+            } else {
+                return n;
+            }
+        } else {
+            return n;
+        }
+    }
+
+    function checkSE(n, row, col, player) {
+        if (col < 6 && row < 5) {
+            if (grid[row + 1][col + 1] == player) {
+                return checkSE(n + 1, row + 1, col + 1, player);
+            } else {
+                return n;
+            }
+        } else {
+            return n;
+        }
+    }
+
+    if (checkS(1, row, col, player) >= 4) {
+        return (true);
+    } else if (checkE(1, row, col, player) + checkW(0, row, col, player) >= 4) {
+        return (true);
+    } else if (checkNE(1, row, col, player) + checkSW(0, row, col, player) >= 4) {
+        return (true);
+    } else if (checkNW(1, row, col, player) + checkSE(0, row, col, player) >= 4) {
+        return (true);
+    } else {
+        return false;
+    }
+}
+
+function modifTab(tab, x, y, player) {
+    var newTab = $.extend(true, [], tab);
+
+    newTab[x][y] = player;
+    return newTab;
+}
+
+function getFreeRow(tab, col) {
+    for (var row = 5; row >= 0; row--) {
+        if (tab[row][col] == "empty") {
+            return row;
+        }
+    }
+}
+
+
+function evaluate(nPlayer, nEmpty, nOther) {
+    var score = 0;
+    if (nEmpty == 4) {
+        return score;
+    }
+    if (nPlayer == 4) {
+        score += 100;
+    } else if (nPlayer == 3 && nEmpty == 1) {
+        score += 5;
+    } else if (nPlayer == 2 && nEmpty == 2) {
+        score += 2;
+    } else if (nOther == 3 && nEmpty == 1) {
+        score -= 4;
+    }
+    return score;
+}
+
+function evaluateScoreTab(grid, player) {
     var score = -1000;
 
     //checks for horizontal alignement
-    for (var row = 0; row < this.ROWS; row++) {
-        for (var col = 0; col < this.COLS - 3; col++) {
+    for (var row = 0; row < 6; row++) {
+        for (var col = 0; col < 7 - 3; col++) {
             var nPlayer = 0;
             var nEmpty = 0;
             var nOther = 0;
@@ -37,8 +156,8 @@ function evaluateScoreTab(grid, player) {
     }
 
     //checks for vertical alignement
-    for (var col = 0; col < this.COLS; col++) {
-        for (var row = 0; row < this.ROWS - 3; row++) {
+    for (var col = 0; col < 7; col++) {
+        for (var row = 0; row < 6 - 3; row++) {
             var nPlayer = 0;
             var nEmpty = 0;
             var nOther = 0;
@@ -56,8 +175,8 @@ function evaluateScoreTab(grid, player) {
     }
 
     //checks for down diagonal alignement
-    for (var col = 0; col < this.COLS - 3; col++) {
-        for (var row = 0; row < this.ROWS - 3; row++) {
+    for (var col = 0; col < 7 - 3; col++) {
+        for (var row = 0; row < 6 - 3; row++) {
             var nPlayer = 0;
             var nEmpty = 0;
             var nOther = 0;
@@ -76,8 +195,8 @@ function evaluateScoreTab(grid, player) {
 
     //checks for up diagonal alignement
 
-    for (var col = 0; col < this.COLS; col++) {
-        for (var row = this.ROWS - 1; row > this.ROWS - 3; row--) {
+    for (var col = 0; col < 7 - 3; col++) {
+        for (var row = 6 - 1; row > 6 - 3; row--) {
             var nPlayer = 0;
             var nEmpty = 0;
             var nOther = 0;
@@ -98,7 +217,105 @@ function evaluateScoreTab(grid, player) {
     return score;
 }
 
+function isFull(tab) {
+    var full = true;
+    for (var col = 0; col < tab.length; col++) {
+        if (tab[0][col] == "empty") {
+            full = false;
+        }
+    }
+    return full;
+}
 
+function minimax(node, depth, maximizingPlayer, player, terminal) {
+    var otherPlayer = (player === "red") ? "yellow" : "red";
+    if (terminal == "yellow") {
+        return [1000000000000, 0];
+    } else if (isFull(node)) {
+        return [0, 0];
+    } else if (terminal == "red") {
+        return [-1000000000000, 0];
+    } else if (depth == 0) {
+        return [evaluateScoreTab(node, player), 0];
+    }
+    if (maximizingPlayer) {
+        var value = -Infinity;
+        var bestCol = 0;
+        for (var col = 0; col < 7; col++) {
+            if (node[0][col] == "empty") {
+                var row = getFreeRow(node, col);
+                var child = modifTab(node, row, col, player);
+                if (winner(child, player, row, col)) {
+                    var newScore = minimax(child, depth - 1, false, otherPlayer, player)[0];
+                    if (col == 1 || col == 5) {
+                        newScore += 1;
+                    } else if (col == 2 || col == 4) {
+                        newScore += 2;
+                    } else if (col == 3) {
+                        newScore += 3;
+                    }
+                    if (newScore > value) {
+                        value = newScore;
+                        bestCol = col;
+                    }
+                } else {
+                    var newScore = minimax(child, depth - 1, false, otherPlayer, "none")[0];
+                    if (col == 1 || col == 5) {
+                        newScore += 1;
+                    } else if (col == 2 || col == 4) {
+                        newScore += 2;
+                    } else if (col == 3) {
+                        newScore += 3;
+                    }
+                    if (newScore > value) {
+                        value = newScore;
+                        bestCol = col;
+                    }
+                }
+
+            }
+        }
+        return [value, bestCol];
+    } else { //minimisingPlayer
+        var value = Infinity;
+        var bestCol = 0;
+        for (var col = 0; col < 7; col++) {
+            if (node[0][col] == "empty") {
+                var row = getFreeRow(node, col);
+                var child = modifTab(node, row, col, player);
+                if (winner(node, player, row, col)) {
+                    var newScore = minimax(child, depth - 1, true, otherPlayer, player)[0];
+                    if (col == 1 || col == 5) {
+                        newScore += 1;
+                    } else if (col == 2 || col == 4) {
+                        newScore += 2;
+                    } else if (col == 3) {
+                        newScore += 3;
+                    }
+                    if (newScore < value) {
+                        value = newScore;
+                        bestCol = col;
+                    }
+                } else {
+                    var newScore = minimax(child, depth - 1, true, otherPlayer, "none")[0];
+                    if (col == 1 || col == 5) {
+                        newScore += 1;
+                    } else if (col == 2 || col == 4) {
+                        newScore += 2;
+                    } else if (col == 3) {
+                        newScore += 3;
+                    }
+                    if (newScore < value) {
+                        value = newScore;
+                        bestCol = col;
+                    }
+                }
+
+            }
+        }
+        return [value, bestCol];
+    }
+}
 
 class grid {
     constructor(selector) {
@@ -157,269 +374,31 @@ class grid {
         return tab;
     }
 
-
-    /**the fonction checks for an alignement of 4 colors in one of four directions
-     * (South-North, East-West, SouthWest-NorthEast, NorthWest-SouthEsast)
-     * It work thanks to a recursive method 
-     */
-    checkForWinner(row, col, player) {
-        const that = this; //that will be used as this in the following functions
-        const grid = this.createCopyTab();
-
-        function checkS(n, row, col, player) {
-            if (row < 5) { //verify we are not looking outside the grid
-                if (grid[row + 1][col] == player) {
-                    return checkS(n + 1, row + 1, col, player);
-                } else {
-                    return n;
-                }
-            } else {
-                return n;
-            }
-        }
-
-        function checkE(n, row, col, player) {
-            if (col < 6) {
-                if (grid[row][col + 1] == player) {
-                    return checkE(n + 1, row, col + 1, player);
-                } else {
-                    return n;
-                }
-            } else {
-                return n;
-            }
-        }
-
-        function checkW(n, row, col, player) {
-            if (col > 0) {
-                if (grid[row][col - 1] == player) {
-                    return checkW(n + 1, row, col - 1, player);
-                } else {
-                    return n;
-                }
-            } else {
-                return n;
-            }
-        }
-
-        function checkNE(n, row, col, player) {
-            if (col < 6 && row > 0) {
-                if (grid[row - 1][col + 1] == player) {
-                    return checkNE(n + 1, row - 1, col + 1, player);
-                } else {
-                    return n;
-                }
-            } else {
-                return n;
-            }
-        }
-
-        function checkSW(n, row, col, player) {
-            if (col > 0 && row < 5) {
-                if (grid[row + 1][col - 1] == player) {
-                    return checkSW(n + 1, row + 1, col - 1, player);
-                } else {
-                    return n;
-                }
-            } else {
-                return n;
-            }
-        }
-
-        function checkNW(n, row, col, player) {
-            if (col > 0 && row > 0) {
-                if (grid[row - 1][col - 1] == player) {
-                    return checkNW(n + 1, row - 1, col - 1, player);
-                } else {
-                    return n;
-                }
-            } else {
-                return n;
-            }
-        }
-
-        function checkSE(n, row, col, player) {
-            if (col < 6 && row < 5) {
-                if (grid[row + 1][col + 1] == player) {
-                    return checkSE(n + 1, row + 1, col + 1, player);
-                } else {
-                    return n;
-                }
-            } else {
-                return n;
-            }
-        }
-
-        if (checkS(1, row, col, player) >= 4) {
-            return player + " wins !";
-        } else if (checkE(1, row, col, player) + checkW(0, row, col, player) >= 4) {
-            return player + " wins !";
-        } else if (checkNE(1, row, col, player) + checkSW(0, row, col, player) >= 4) {
-            return player + " wins !";
-        } else if (checkNW(1, row, col, player) + checkSE(0, row, col, player) >= 4) {
-            return player + " wins !";
-        } else {
-            return null;
-        }
-    }
-
-    evaluateScore(player) {
-        const grid = this.createCopyTab();
-
-        function evaluate(nPlayer, nEmpty, nOther) {
-            var score = 0;
-            if (nEmpty == 4) {
-                return score;
-            }
-            if (nPlayer == 4) {
-                score += 100;
-            } else if (nPlayer == 3 && nEmpty == 1) {
-                score += 10;
-            } else if (nPlayer == 2 && nEmpty == 2) {
-                score += 5;
-            }
-
-            return score;
-        }
-
-        var score = -1000;
-
-        const otherPlayer = (player === 'red') ? "yellow" : "red";
-
-        //checks for horizontal alignement
-        for (var row = 0; row < this.ROWS; row++) {
-            for (var col = 0; col < this.COLS - 3; col++) {
-                var nPlayer = 0;
-                var nEmpty = 0;
-                var nOther = 0;
-                for (var i = 0; i < 4; i++) {
-                    if (grid[row][col + i] == player) {
-                        nPlayer += 1;
-                    } else if (grid[row][col + i] == "empty") {
-                        nEmpty += 1;
-                    } else {
-                        nOther += 1;
-                    }
-                }
-                score += evaluate(nPlayer, nEmpty, nOther);
-            }
-        }
-
-        //checks for vertical alignement
-        for (var col = 0; col < this.COLS; col++) {
-            for (var row = 0; row < this.ROWS - 3; row++) {
-                var nPlayer = 0;
-                var nEmpty = 0;
-                var nOther = 0;
-                for (var i = 0; i < 4; i++) {
-                    if (grid[row + i][col] == player) {
-                        nPlayer += 1;
-                    } else if (grid[row + i][col] == "empty") {
-                        nEmpty += 1;
-                    } else {
-                        nOther += 1;
-                    }
-                }
-                score += evaluate(nPlayer, nEmpty, nOther);
-            }
-        }
-
-        //checks for down diagonal alignement
-        for (var col = 0; col < this.COLS - 3; col++) {
-            for (var row = 0; row < this.ROWS - 3; row++) {
-                var nPlayer = 0;
-                var nEmpty = 0;
-                var nOther = 0;
-                for (var i = 0; i < 4; i++) {
-                    if (grid[row + i][col + i] == player) {
-                        nPlayer += 1;
-                    } else if (grid[row + i][col + i] == "empty") {
-                        nEmpty += 1;
-                    } else {
-                        nOther += 1;
-                    }
-                }
-                score += evaluate(nPlayer, nEmpty, nOther);
-            }
-        }
-
-        //checks for up diagonal alignement
-
-        for (var col = 0; col < this.COLS; col++) {
-            for (var row = this.ROWS - 1; row > this.ROWS - 3; row--) {
-                var nPlayer = 0;
-                var nEmpty = 0;
-                var nOther = 0;
-                for (var i = 0; i < 4; i++) {
-
-                    if (grid[row - i][col + i] == player) {
-                        nPlayer += 1;
-                    } else if (grid[row - i][col + i] == "empty") {
-                        nEmpty += 1;
-                    } else {
-                        nOther += 1;
-                    }
-                }
-                score += evaluate(nPlayer, nEmpty, nOther);
-            }
-        }
-
-        return score;
-    }
-
-    isFull() {
-        var full = true;
-        for (var col = 0; col < this.COLS; col++) {
-            if (this.getCell(0, col).hasClass("empty")) {
-                full = false;
-            }
-        }
-        return full;
-    }
-
-    minimax(node, depth, maximizingPlayer) {
-        if (node.winner(maximizingPlayer)) {
-            return 1000000000;
-        } else if (node.isFull()) {
-            return 0;
-        } else if (node.winner(other)) {
-            return -100000000;;
-        } else if (depth == 0) {
-            return node.evaluateScore(player)
-        }
-        if (maximizingPlayer) {
-            var value = -Infinity;
-            for (var col = 0; col < this.COLS; col++) {
-                if (this.getCell(0, col).hasClass("empty")) {
-                    value = Math.max(value, minimax(child, depth - 1, false));
-                }
-            }
-        } else { //minimisingPlayer
-            var value = Infinity;
-            for (var col = 0; col < this.COLS; col++) {
-                if (this.getCell(0, col).hasClass("empty")) {
-                    value = Math.min(value, minimax(child, depth - 1, true));
-                }
-            }
-        }
-    }
-
-
     pickBestMove(player) {
+        function modifTab(tab, x, y, player) {
+            var newTab = $.extend(true, [], tab);
+
+            newTab[x][y] = player;
+            return newTab;
+        }
         var bestCol = 0;
-        const cell = this.findLastEmptyCell(bestCol);
-        cell.removeClass("empty");
-        cell.addClass(player);
-        var scoreMax = this.evaluateScore(player);
+        var cell = this.findLastEmptyCell(bestCol);
+        var x = cell.data("row");
+        var y = cell.data("col");
+        var tab = this.createCopyTab();
+        var tab2 = modifTab(tab, x, y, player);
+        var scoreMax = evaluateScoreTab(tab2, player);
+
         console.log(0 + " " + scoreMax + " ");
-        cell.removeClass(player);
-        cell.addClass("empty");
         for (var col = 1; col < this.COLS; col++) {
-            const cell = this.findLastEmptyCell(col);
+            var cell = this.findLastEmptyCell(col);
             if (cell) {
-                cell.removeClass("empty");
-                cell.addClass(player);
-                var score = this.evaluateScore(player);
+                x = cell.data("row");
+                y = cell.data("col");
+                tab2 = modifTab(tab, x, y, player);
+                console.log(tab2);
+
+                var score = evaluateScoreTab(tab2, player);
                 if (col == 1 || col == 5) {
                     score += 1;
                 } else if (col == 2 || col == 4) {
@@ -428,8 +407,6 @@ class grid {
                     score += 6;
                 }
                 console.log(col + " " + score + " ");
-                cell.removeClass(player);
-                cell.addClass("empty");
                 if (score > scoreMax) {
                     scoreMax = score;
                     bestCol = col;
@@ -441,14 +418,16 @@ class grid {
 
     AIturn(player) {
         const ai = (player === 'red') ? "yellow" : "red";
-        const bestCol = this.pickBestMove(ai);
+        const grid = this.createCopyTab();
+        const bestCol = minimax(grid, 4, true, ai, "none")[1];
+        //const bestCol = this.pickBestMove(ai);
         const cell = this.findLastEmptyCell(bestCol);
         cell.removeClass("empty");
         cell.addClass(ai);
-        console.log("best " + bestCol);
+        //console.log("best " + bestCol);
         const row = cell.data("row");
-        if (this.checkForWinner(row, bestCol, ai)) {
-            alert(this.checkForWinner(row, bestCol, ai));
+        if (winner(this.createCopyTab(), ai, row, bestCol)) {
+            alert(ai + " wins !");
         }
     }
 
@@ -485,12 +464,12 @@ class grid {
             lastEmptyCell.removeClass("empty");
             lastEmptyCell.addClass(that.player);
             const row = lastEmptyCell.data("row");
-            if (that.checkForWinner(row, col, that.player)) {
+            if (winner(that.createCopyTab(), that.player, row, col)) {
                 $board.off("click");
                 $board.off("mouseenter");
                 $board.off("mouseleave");
                 that.gameNumber = 0;
-                alert(that.checkForWinner(row, col, that.player));
+                alert(that.player + " wins !");
             }
             //if the player is red we change it to yellow
             if (that.mode == "2players") {
