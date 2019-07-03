@@ -122,7 +122,7 @@ function evaluate(nPlayer, nEmpty, nOther) {
         return score;
     }
     if (nPlayer == 4) {
-        score += 100;
+        score += 200;
     } else if (nPlayer == 3 && nEmpty == 1) {
         score += 5;
     } else if (nPlayer == 2 && nEmpty == 2) {
@@ -230,7 +230,7 @@ function isFull(tab) {
 function minimax(node, depth, maximizingPlayer, player, terminal) {
     var otherPlayer = (player === "red") ? "yellow" : "red";
     if (terminal == "yellow") {
-        return [1000000000000, 0];
+        return [10000000000000000, 0];
     } else if (isFull(node)) {
         return [0, 0];
     } else if (terminal == "red") {
@@ -331,7 +331,7 @@ class grid {
         for (let row = 0; row < this.ROWS; row++) {
             const $row = $('<div>').addClass('row');
             for (let col = 0; col < this.COLS; col++) {
-                const $col = $('<div>').addClass('column empty').attr("data-row", row).attr("data-col", col);
+                const $col = $('<div>').addClass('column empty').attr("data-row", row).attr("data-col", col).attr("data-toogle", "popover");
                 $row.append($col);
             }
             $board.append($row);
@@ -419,7 +419,16 @@ class grid {
     AIturn(player) {
         const ai = (player === 'red') ? "yellow" : "red";
         const grid = this.createCopyTab();
-        const bestCol = minimax(grid, 4, true, ai, "none")[1];
+        var bestCol = minimax(grid, 4, true, ai, "none")[1];
+        for (var col = 0; col < this.COLS; col++) {
+            var cellTest = this.findLastEmptyCell(col);
+            if (cellTest) {
+                var rowTest = cellTest.data("row");
+                if (winner(modifTab(grid, rowTest, col, ai), ai, rowTest, col)) {
+                    bestCol = col;
+                }
+            }
+        }
         //const bestCol = this.pickBestMove(ai);
         const cell = this.findLastEmptyCell(bestCol);
         cell.removeClass("empty");
@@ -428,6 +437,7 @@ class grid {
         const row = cell.data("row");
         if (winner(this.createCopyTab(), ai, row, bestCol)) {
             alert(ai + " wins !");
+            //$(`.column[data-col='${bestCol}'][data-row='${row}']`).popover(content, ai + " wins !");
         }
     }
 
@@ -470,6 +480,8 @@ class grid {
                 $board.off("mouseleave");
                 that.gameNumber = 0;
                 alert(that.player + " wins !");
+                //$(`.column[data-col='${col}'][data-row='${row}']`).popover({ content: that.player + " wins !" });
+
             }
             //if the player is red we change it to yellow
             if (that.mode == "2players") {
