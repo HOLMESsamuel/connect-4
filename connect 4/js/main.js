@@ -230,7 +230,7 @@ function isFull(tab) {
 function minimax(node, depth, maximizingPlayer, player, terminal) {
     var otherPlayer = (player === "red") ? "yellow" : "red";
     if (terminal == "yellow") {
-        return [10000000000000000, 0];
+        return [10000000000, 0];
     } else if (isFull(node)) {
         return [0, 0];
     } else if (terminal == "red") {
@@ -331,7 +331,7 @@ class grid {
         for (let row = 0; row < this.ROWS; row++) {
             const $row = $('<div>').addClass('row');
             for (let col = 0; col < this.COLS; col++) {
-                const $col = $('<div>').addClass('column empty').attr("data-row", row).attr("data-col", col).attr("data-toogle", "popover");
+                const $col = $('<div>').addClass('column empty').attr("data-row", row).attr("data-col", col);
                 $row.append($col);
             }
             $board.append($row);
@@ -436,8 +436,12 @@ class grid {
         //console.log("best " + bestCol);
         const row = cell.data("row");
         if (winner(this.createCopyTab(), ai, row, bestCol)) {
-            alert(ai + " wins !");
-            //$(`.column[data-col='${bestCol}'][data-row='${row}']`).popover(content, ai + " wins !");
+            var $board = $(this.selector);
+            $board.off("click");
+            $board.off("mouseenter");
+            this.gameNumber = 0;
+            $('[data-toggle="popover"]').popover({ title: "The game is over", content: ai + " wins !" });
+            $('[data-toggle="popover"]').popover("show");
         }
     }
 
@@ -454,9 +458,12 @@ class grid {
 
 
     createEventListeners() {
-        const $board = $(this.selector);
+        var $board = $(this.selector);
         const that = this; //that will be used as this in the following functions
 
+        $board.on("mouseleave", function() {
+            $('[data-toggle="popover"]').popover("dispose");
+        });
 
         $board.on("mouseenter", ".column.empty", function() {
             const col = $(this).data("col");
@@ -477,10 +484,9 @@ class grid {
             if (winner(that.createCopyTab(), that.player, row, col)) {
                 $board.off("click");
                 $board.off("mouseenter");
-                $board.off("mouseleave");
                 that.gameNumber = 0;
-                alert(that.player + " wins !");
-                //$(`.column[data-col='${col}'][data-row='${row}']`).popover({ content: that.player + " wins !" });
+                $('[data-toggle="popover"]').popover({ title: "The game is over", content: that.player + " wins !" });
+                $('[data-toggle="popover"]').popover("show");
 
             }
             //if the player is red we change it to yellow
@@ -489,6 +495,7 @@ class grid {
                 $(this).trigger("mouseenter");
             } else {
                 that.AIturn(that.player);
+                $(this).trigger("mouseenter");
             }
 
         });
@@ -498,6 +505,7 @@ class grid {
 $(document).ready(function() {
     $grid = new grid("#connect4");
     $("#begin").click(function() {
+        $('[data-toggle="popover"]').popover("dispose");
         $("#connect4").empty();
         $grid.createGrid();
         color = $('input[name=inlineRadioOptions2]:checked').val();
